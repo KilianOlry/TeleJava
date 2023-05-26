@@ -19,38 +19,17 @@ public class Main {
         String userFirstName = getUserInput("Veuillez entrer votre Prénom :");
         String userPhoneNumber = getUserInput("Veuillez entrer votre Numéro :");
 
+
         Contact newContact = new Contact(userLastName, userFirstName, userPhoneNumber);
 
-
-
-        File phoneBookFile = new File("C:\\Users\\Kilian\\Desktop\\DEV\\Projet\\Java\\TeleJava\\info.txt");
-
-        if(phoneBookFile.exists()){
-            System.out.println("le fichier existe");
-        }else {
-            System.out.println("le fichier n'existe pas");
-            try {
-                phoneBookFile.createNewFile();
-                System.out.println("Le fichier à été créer");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        try {
-            BufferedWriter fileWritter = new BufferedWriter(new FileWriter(phoneBookFile, true));
-            fileWritter.append(newContact.toString());
-            fileWritter.append('\n');
-            System.out.println("Contact ajouté");
-            fileWritter.close();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-
-
         System.out.println(newContact.toString());
-    }
+    File phoneBookFile = getOrCreatePhoneBookFile("mettre le chemin");
 
+
+
+
+        appendContactToPhoneBook(phoneBookFile, newContact);
+    }
 
 
         public static String getUserInput(String UserRequest)
@@ -59,4 +38,31 @@ public class Main {
             return UserInputScanner.nextLine();
         }
 
+
+        public static File getOrCreatePhoneBookFile(String phoneBookFilePath){
+            File phoneBookFile = new File(phoneBookFilePath);
+
+            if(phoneBookFile.exists()){
+                return phoneBookFile;
+            }
+            try {
+                phoneBookFile.createNewFile();
+                    System.out.println("Le fichier à été créer (" +phoneBookFilePath +")");
+                return phoneBookFile;
+            } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+        }
+
+        public static void appendContactToPhoneBook(File phoneBookFile, Contact newContact){
+            try ( BufferedWriter fileWritter = new BufferedWriter(new FileWriter(phoneBookFile, true))){
+
+                fileWritter.append(newContact.toString());
+                fileWritter.append('\n');
+
+                System.out.println("Contact ajouté");
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        }
 }
